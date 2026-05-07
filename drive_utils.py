@@ -97,11 +97,13 @@ def download_file_from_drive(file_id: str, output_path: str) -> tuple:
         output_path = output_path + ext
     request = service.files().get_media(fileId=file_id)
     fh = io.FileIO(output_path, "wb")
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while not done:
-        _, done = downloader.next_chunk()
-    fh.close()
+    try:
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        while not done:
+            _, done = downloader.next_chunk()
+    finally:
+        fh.close()
     return output_path, mime_type
 
 
@@ -111,9 +113,11 @@ def download_file_by_name(file_id: str, file_name: str, output_dir: str) -> str:
     output_path = os.path.join(output_dir, file_name)
     request = service.files().get_media(fileId=file_id)
     fh = io.FileIO(output_path, "wb")
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while not done:
-        _, done = downloader.next_chunk()
-    fh.close()
+    try:
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        while not done:
+            _, done = downloader.next_chunk()
+    finally:
+        fh.close()
     return output_path

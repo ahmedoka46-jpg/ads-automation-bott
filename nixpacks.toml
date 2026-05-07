@@ -1,10 +1,13 @@
 providers = ["python"]
 
 [phases.setup]
-nixPkgs = ["python311", "python311Packages.pip", "python311Packages.virtualenv", "ffmpeg"]
+nixPkgs = ["python311", "python311Packages.pip", "ffmpeg"]
 
 [phases.install]
-cmds = ["python3.11 -m virtualenv /opt/venv && /opt/venv/bin/pip install -r requirements.txt"]
+cmds = [
+  "python3 -m venv --copies /opt/venv",
+  ". /opt/venv/bin/activate && pip install -r requirements.txt"
+]
 
-[phases.start]
-cmd = "/opt/venv/bin/python main.py"
+[start]
+cmd = "python3 main.py"
