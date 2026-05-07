@@ -51,15 +51,16 @@ _PLATFORM_ENV = {
 
 def _validate_env() -> None:
     """تتحقق من المتغيرات الإلزامية وتحدد المنصات المتاحة."""
-    missing = [k for k in _REQUIRED_ENV if not os.getenv(k)]
+    missing = [k for k in _REQUIRED_ENV if not (os.getenv(k) or "").strip()]
     if missing:
-        logger.critical("❌ متغيرات بيئة إلزامية ناقصة: %s", ", ".join(missing))
+        # Only Telegram/Drive are mandatory; ad platforms are optional.
+        logger.critical("❌ متغيرات بيئة ناقصة: %s", ", ".join(missing))
         sys.exit(1)
 
     available = []
     unavailable = []
     for platform, keys in _PLATFORM_ENV.items():
-        if all(os.getenv(k) for k in keys):
+        if all((os.getenv(k) or "").strip() for k in keys):
             available.append(platform)
         else:
             unavailable.append(platform)
@@ -139,8 +140,8 @@ async def select_platform(update: Update, context) -> int:
         need = ", ".join(_PLATFORM_ENV.get(platform, []))
         await query.edit_message_text(
             f"❌ {name} غير مهيأ حالياً.\n"
-            f"{('🔑 المطلوب في .env: ' + need + '\\n') if need else ''}"
-            f"جهّز التوكنات ثم جرّب تاني."
+            + (f"🔑 المطلوب في .env: {need}\n" if need else "")
+            + "جهّز التوكنات ثم جرّب تاني."
         )
         return ConversationHandler.END
 
