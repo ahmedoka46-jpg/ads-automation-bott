@@ -319,6 +319,7 @@ async def cancel(update: Update, context) -> int:
 
 
 def main() -> None:
+    logger.info("Starting bot from: %s", os.path.abspath(__file__))
     _validate_env()
 
     token = os.getenv("TELEGRAM_BOT_TOKEN")
